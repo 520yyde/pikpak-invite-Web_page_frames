@@ -1,4 +1,10 @@
 可以部署在本地（windows）和云服务器（我用的是centos7系统）
+
+注意！！！只有框架没有运行程序，如有需要请自行添加邀请程序
+
+演示站点： https://bailao.cangqion.sbs/
+
+
 在 CentOS 上安装 Python 3.11
 
 sudo yum groupinstall "Development Tools"
