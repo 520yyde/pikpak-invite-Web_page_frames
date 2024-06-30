@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pikpak邀请程序</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://t.alcy.cc/pc/'); /* 设置随机图片作为背景 */
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            opacity: 0.7;
+        }
+        .output-box {
+            width: 100%;
+            height: 200px;
+            margin-top: 10px;
+            opacity: 0.5;
+        }
+        #invite-code, #captcha-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            opacity: 0.8;
+        }
+        #invite-button, #captcha-button, #free-node-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #invite-button:disabled, #captcha-button:disabled, #free-node-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .notice {
+            background-color: rgba(255, 0, 0, 0.7);
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .donate-button {
+            background-color: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>pikpak邀请程序</h1>
+        <h3>作者 1930520970（白栀）</h3>
+        <div class="notice">
+            此版本随时挂，因为作者没钱续费挂机宝，这个API随时凉，想一直用请请赞助作者，6元就能续命一个月。
+        </div>
+        <form id="captcha-form">
+            <label for="captcha-input" id="captcha-label"></label><br>
+            <input type="text" id="captcha-input" name="captcha-input" required><br><br>
+            <button type="submit" id="captcha-button">验证</button>
+        </form>
+        <form id="invite-form" style="display:none;">
+            <label for="invite-code">邀请码:</label><br>
+            <input type="text" id="invite-code" name="invite-code" required><br><br>
+            <button type="submit" id="invite-button">开始邀请</button>
+            <button type="button" id="free-node-button">获取免费节点</button>
+        </form>
+        <br>
+        <textarea id="output" class="output-box" readonly></textarea>
+        <button class="donate-button" onclick="showQrCode()">赞赏作者</button>
+    </div>
+
+    <script>
+        function generateCaptcha() {
+            let num1 = Math.floor(Math.random() * 10);
+            let num2 = Math.floor(Math.random() * 10);
+            let captcha = `${num1} x ${num2}`;
+            $('#captcha-label').text(`请输入验证码: ${captcha}`);
+            return num1 * num2;
+        }
+
+        let correctAnswer = generateCaptcha();
+
+        $(document).ready(function() {
+            $('#captcha-form').on('submit', function(event) {
+                event.preventDefault();
+                let userAnswer = parseInt($('#captcha-input').val());
+                if (userAnswer === correctAnswer) {
+                    $('#captcha-form').hide();
+                    $('#invite-form').show();
+                } else {
+                    alert("验证码错误，请重试。");
+                    correctAnswer = generateCaptcha();
+                    $('#captcha-input').val('');
+                }
+            });
+
+            $('#invite-form').on('submit', function(event) {
+                event.preventDefault();
+                
+                $('#invite-button').attr('disabled', true);
+                $('#output').val('正在处理...');
+
+                $.ajax({
+                    url: '/start_invite',
+                    type: 'POST',
+                    data: JSON.stringify({
+                        invite_code: $('#invite-code').val()
+                    }),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        $('#output').val(response.output.join("\n"));
+                        $('#invite-button').attr('disabled', false);
+                        $('#invite-form').hide();
+                        $('#captcha-form').show();
+                        correctAnswer = generateCaptcha();
+                        $('#captcha-input').val('');
+                    },
+                    error: function() {
+                        $('#output').val('处理失败，请重试。');
+                        $('#invite-button').attr('disabled', false);
+                    }
+                });
+            });
+
+            $('#free-node-button').on('click', function() {
+                $('#free-node-button').attr('disabled', true);
+                $('#output').val('正在获取免费节点...');
+
+                $.ajax({
+                    url: '/get_free_node',
+                    type: 'GET',
+                    success: function(response) {
+                        $('#output').val(response.output.join("\n"));
+                        $('#free-node-button').attr('disabled', false);
+                    },
+                    error: function() {
+                        $('#output').val('获取失败，请重试。');
+                        $('#free-node-button').attr('disabled', false);
+                    }
+                });
+            });
+        });
+
+        function showQrCode() {
+            alert("感谢您的支持！请使用以下付款码进行赞赏。");
+            window.open('https://img.picui.cn/free/2024/06/14/666b4469d3de7.png', '_blank');
+        }
+    </script>
+</body>
+</html>
