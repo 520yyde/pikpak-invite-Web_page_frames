@@ -87,14 +87,14 @@ sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 sudo chmod +x /usr/local/bin/cloudflared
 
 2. 验证 Cloudflare 账户
-3. 
+
 登录 Cloudflare：
 
 cloudflared login
 
 这会打开一个浏览器窗口，让你登录到Cloudflare并授权该服务器的访问。
 
-4. 创建和配置隧道
+3. 创建和配置隧道
 
 创建隧道：
 
@@ -123,7 +123,7 @@ ingress:
 
 cloudflared tunnel run my-tunnel
 
-6. 更新 DNS 记录
+5. 更新 DNS 记录
 
 在 Cloudflare 控制面板中，创建 CNAME 记录：
 
@@ -133,7 +133,7 @@ cloudflared tunnel run my-tunnel
 
 目标: <your-tunnel-id>.cfargotunnel.com
 
-8. 配置为服务
+6. 配置为服务
 
 为了确保隧道在系统重启后自动启动，可以将其配置为一个 systemd 服务：
 
