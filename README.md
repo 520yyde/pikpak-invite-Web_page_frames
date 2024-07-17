@@ -1,6 +1,7 @@
 可以部署在本地（windows）和云服务器（我用的是centos7系统）
 
 注意！！！只有框架没有运行程序，如有需要请自行添加邀请程序
+# 邀请程序：https://github.com/520yyde/pikpak-invite
 
 演示站点： https://bailao.cangqion.sbs/
 
